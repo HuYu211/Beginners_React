@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            font: 14px "Century Gothic", Futura, sans-serif;
+            margin: 20px;
+        }
+
+        ol,
+        ul {
+            padding-left: 30px;
+        }
+
+        .board-row:after {
+            clear: both;
+            content: "";
+            display: table;
+        }
+
+        .status {
+            margin-bottom: 10px;
+        }
+
+        .square {
+            background: #fff;
+            border: 1px solid #999;
+            float: left;
+            font-size: 24px;
+            font-weight: bold;
+            line-height: 34px;
+            height: 34px;
+            margin-right: -1px;
+            margin-top: -1px;
+            padding: 0;
+            text-align: center;
+            width: 34px;
+        }
+
+        .square:focus {
+            outline: none;
+        }
+
+        .kbd-navigation .square:focus {
+            background: #ddd;
+        }
+
+        .game {
+            display: flex;
+            flex-direction: row;
+        }
+
+        .game-info {
+            margin-left: 20px;
+        }
+        .reset_btn{
+            margin-top: 20px;
+            margin-left: 16px;
+            border-radius: 10px;
+            outline: none;
+            width: 60px;
+        }
+        .btn{
+            border-radius: 10px;
+            outline: none;
+        }
+        .order{
+            margin-left: 30px;
+            display: inline-block;
+        }
+        .status{
+            display: inline-block;
+            margin-left: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="root"></div>
+    <script src="../assets/js/react.development.js"></script>
+    <script src="../assets/js/react-dom.development.js"></script>
+    <script src="../assets/js/browser.min.js"></script>
+    <script type="text/babel">
+        class Square extends React.Component {
+            render() {
+                let button = null
+                if (this.props.light) {
+                    button = {
+                        color: 'red'
+                    }
+                }
+                return (
+                    <button className="square" onClick={this.props.onClick} style={button}>
+                        {this.props.value}
+                    </button>
+                );
+            }
+        }
+        class Board extends React.Component {
+            constructor(props) {
+                super(props)
+            }
+            render() {
+                const SquareRow = []
+                for (let i = 0; i < 3; i++) {
+                    let str = [];
+                    //两重循环遍历出棋盘
+                    for (let j = 0; j < 3; j++) {
+                        let light = false;
+                        if (this.props.winnnerStep.indexOf(i * 3 + j) != -1) {
+                            light = true;
+                        } else {
+                            light = false;
+                        }
+                        str.push(
+                            <Square
+                                value={this.props.square[i * 3 + j]}
+                                key={i * 3 + j}
+                                onClick={() => this.props.handleClick(i * 3 + j)}
+                                light={light}
+                            />
+                        )
+
+                    }
+                    let square = <div className="board-row">{str}</div>
+                    SquareRow.push(square)
+                }
+                let showSquare = SquareRow.map((item, index) => {
+                    return <div key={index}>{item}</div>
+                })
+                return (
+                    <div>
+                        <div>
+                            {showSquare}
+                        </div>
+                        <div>
+                            <button onClick={() => this.props.reSetClick()} className='reset_btn'>重置</button>
+                        </div>
+                    </div>
+                );
+            }
+        }
+
+        class Game extends React.Component {
+            constructor(props) {
+                super(props);
+                this.state = {
+                    // square: Array(9).fill(null),
+                    xIsNext: true,
+                    history: [
+                        {
+                            square: Array(9).fill(null),
+                            coordinate: 0
+                        }
+                    ],
+                    stepNumber: 0,
+                    order: false
+                }
+            }
+            handleClick(i) {
+                let history = this.state.history.slice(0, this.state.stepNumber + 1);
+                let current = history[history.length - 1]
+                let square = current.square.slice();
+                //如果存在获胜者或此棋格已有值，则返回
+                if (calculateWinner(square) || square[i]) {
+                    return;
+                }
+                //根据xIsNext判断值为X或0
+                square[i] = this.state.xIsNext ? "X" : "O";
+                //计算此步的x坐标
+                let x = Math.floor(i / 3) + 1
+                //计算此步的y坐标
+                let y = i % 3 + 1
+                //生成坐标信息
+                let coordinate = square[i] + '(' + x + ',' + y + ')'
+                this.setState({
+                    history: history.concat([
+                        {
+                            square: square,
+                            coordinate: coordinate
+                        }
+                    ]),
+                    stepNumber: history.length,
+                    xIsNext: !this.state.xIsNext
+                });
+            }
+            jumpTo(step) {
+                this.setState({
+                    stepNumber: step,
+                    xIsNext: (step % 2) === 0
+                });
+            }
+            changeOrder() {
+                this.setState({
+                    order: !this.state.order
+                })
+            }
+            reSetClick(){
+                this.setState({
+                    xIsNext: true,
+                    history: [
+                        {
+                            square: Array(9).fill(null),
+                            coordinate: 0
+                        }
+                    ],
+                    stepNumber: 0,
+                    order: false
+                })
+            }
+            render() {
+                //通过calculateWinner计获取winnner
+                let history = this.state.history;
+                let current = history[this.state.stepNumber];
+                let winner = calculateWinner(current.square);
+                //初始化获胜者获胜步的位置数组
+                let winnerStep = []
+                //设置标量标记棋盘是否已满
+                let flag = true;
+                //遍历判断棋盘是否已满
+                for (let i = 0; i < current.square.length; i++) {
+                    if (current.square[i] === null) {
+                        flag = false;
+                    }
+                }
+                //初始化状态信息（显示对局情况）
+                let status;
+                if (winner) {
+                    status = '获胜者:' + winner.user;
+                    //将连成一线的 3 颗棋子的位置放入数组
+                    winnerStep = winner.step
+                } else {
+                    if(flag){
+                        status = '平局'
+                    }else{
+                        status = "下一位选手: " + (this.state.xIsNext ? "X" : "O");
+                    }
+                    
+                }
+
+                let order = this.state.order ? '▲' : '▼'
+
+                //将步骤信息遍历出来
+                const moves = history.map((step, index) => {
+                    const desc = index ?
+                        'Go to move : ' + step.coordinate :
+                        'Go to game start';
+                    let light = {
+                        color: 'rgb(158, 147, 147)'
+                    };
+                    if(index === this.state.stepNumber){
+                        if(winner){
+                            light={
+                                color: 'red'
+                            }
+                        }else{
+                            light={
+                                color: '#000'
+                            }
+                        }
+                        
+                    }
+                    return (
+                        <li key={index}>
+                            <button onClick={() => this.jumpTo(index)} className='btn' style={light}>{desc}</button>
+                        </li>
+                    );
+                });
+                //如果order为true则翻转数组
+                if (this.state.order) {
+                    moves.reverse()
+                }
+
+
+                return (
+                    <div className="game">
+                        <div className="game-board">
+                            <Board
+                                square={current.square}
+                                handleClick={this.handleClick.bind(this)}
+                                winnnerStep={winnerStep} 
+                                reSetClick={this.reSetClick.bind(this)}
+                            />
+                        </div>
+                        <div className="game-info">
+                            <div onClick={this.changeOrder.bind(this)}>
+                                <div className='status'>
+                                    {status}
+                                </div>
+                                <div className='order'>
+                                    {order}
+                                </div>
+                            </div>
+                            <ul>{moves}</ul>
+                        </div>
+                    </div>
+                );
+            }
+        }
+
+
+        ReactDOM.render(
+            <Game />,
+            document.getElementById('root')
+        );
+
+        function calculateWinner(squares) {
+            const lines = [
+                [0, 1, 2],
+                [3, 4, 5],
+                [6, 7, 8],
+                [0, 3, 6],
+                [1, 4, 7],
+                [2, 5, 8],
+                [0, 4, 8],
+                [2, 4, 6]
+            ];
+            for (let i = 0; i < lines.length; i++) {
+                const [a, b, c] = lines[i];
+                if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
+                    //返回获胜的value和三连棋子的位置
+                    return { user: squares[a], step: [a, b, c] };
+                }
+            }
+            return null;
+        }
+    </script>
+</body>
+
+</html>

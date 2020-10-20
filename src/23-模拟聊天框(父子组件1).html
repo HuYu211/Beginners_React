@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .main {
+            width: 500px;
+            margin: 0 auto;
+            margin-top: 20px;
+        }
+
+        .textArea {
+            margin-top: 20px;
+        }
+
+        .textArea_head {
+            font-size: 20px;
+        }
+
+        .font {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="root"></div>
+    <script src="../assets/js/react.development.js"></script>
+    <script src="../assets/js/react-dom.development.js"></script>
+    <script src="../assets/js/browser.min.js"></script>
+    <script type="text/babel">
+        class Text extends React.Component {
+            render() {
+                return (
+                    <form onSubmit={(e) => this.props.onSubmit(e)}>
+                        <label>
+                            输入框:
+                                <input type="text" name='input' value={this.props.text} onChange={(e) => this.props.onChange(e)} />
+                        </label>
+                        <input type="submit" value="提交" />
+                    </form>
+                )
+            }
+        }
+        class TextArea extends React.Component {
+            constructor(props) {
+                super(props)
+            }  
+            render() {
+                const listItems = this.props.value.map((item, index) =>
+                    <div key={index}>
+                        <div><font className='font'>{this.props.name}</font>:{item.contant}</div>
+                    </div>
+                );
+                return (
+                    <div>
+                        <Text onChange={this.props.onChange.bind(this)} onSubmit={this.props.onSubmit.bind(this)} text={this.props.text} />
+                        <div className='textArea'>
+                            <div className='textArea_head'>聊天记录</div>
+                            {listItems}
+                        </div>
+                    </div>
+
+                )
+            }
+        }
+        class App extends React.Component {
+            constructor(props) {
+                super(props);
+                this.state = {
+                    value: [
+
+                    ],
+                    text: '',
+                    name: 'goodhu'
+                }
+            }
+            handleChange(e) {
+                this.setState({
+                    text: e.target.value
+                })
+            }
+            handleSubmit(e) {
+                e.target.input.focus();
+                let value = [...this.state.value];
+                value.push({
+                    name: this.state.name,
+                    contant: this.state.text
+                })
+                this.setState({
+                    value,
+                    text: ''
+                })
+                e.preventDefault();
+            }
+
+
+            render() {
+                return (
+                    <div className='main'>
+
+                        <TextArea 
+                        value={this.state.value} 
+                        text={this.state.text} 
+                        onChange={this.handleChange.bind(this)} 
+                        onSubmit={this.handleSubmit.bind(this)} 
+                        name = {this.state.name}
+                        />
+                    </div>
+                );
+            }
+
+        }
+        ReactDOM.render(
+            <App />,
+            document.getElementById('root')
+        )
+    </script>
+</body>
+
+</html>

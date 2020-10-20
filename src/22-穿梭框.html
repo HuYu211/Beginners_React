@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .main {
+            width: 800px;
+            margin: 0 auto;
+        }
+
+        .btn {
+            margin-top: 80px;
+        }
+
+        .float {
+            float: left;
+            margin-right: 30px;
+            width: 200px;
+        }
+
+        .float button {
+            display: block;
+            margin: 0 auto;
+            width: 50px;
+            height: 50px;
+            border-radius: 50px;
+            outline: none;
+            margin-top: 15px;
+            background-color: #0e0d0d;
+            
+            
+        }   
+
+        .item {
+            text-align: center;
+            font-size: 20px;
+            line-height: 50px;
+        }
+        input[type="checkbox"]{
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+
+        }
+        .num{
+            font-size: 15px;
+            float: right;
+            padding-top: 10px;
+        }
+        .title{
+            width: 200px;
+        }
+        .btn_font{
+            color: #fff;
+            font-size: 28px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="root"></div>
+    <script src="../assets/js/react.development.js"></script>
+    <script src="../assets/js/react-dom.development.js"></script>
+    <script src="../assets/js/browser.min.js"></script>
+    <script type="text/babel">
+        class List extends React.Component {
+            constructor(props) {
+                super(props);
+
+            }
+            render() {
+                const listItems = this.props.list.map((item, index) =>
+                    <div key={item.id} className='item'>
+                        <input type="checkbox" name="" value={item.thing} checked={item.checked} onChange={() => this.props.change(index)} /><span>{item.thing}</span>
+                    </div>
+                );
+                return (
+                    <div className='title'>
+                        <h2>
+                            <input type="checkbox" name="" value='all' checked={this.props.checked} onChange={() => this.props.allSelect()} />
+                            <span>{this.props.title}</span>
+                            <span className='num'>{this.props.has}/{this.props.sum}</span>
+                        </h2>
+                        
+                        {listItems}
+
+                    </div>
+                )
+            }
+        }
+
+        class App extends React.Component {
+            constructor(props) {
+                super(props);
+                this.state = {
+                    unfinish: [
+                        {
+                            id: 0,
+                            thing: '选项1',
+                            checked: false
+                        },
+                        {
+                            id: 1,
+                            thing: '选项2',
+                            checked: false
+                        },
+                        {
+                            id: 2,
+                            thing: '选项3',
+                            checked: false
+                        },
+                        {
+                            id: 3,
+                            thing: '选项4',
+                            checked: false
+                        },
+                        {
+                            id: 4,
+                            thing: '选项5',
+                            checked: false
+                        }
+                    ],
+                    finish: [
+
+                    ],
+                    unfinishAll: false,
+                    finishAll: false
+                }
+            }
+            //勾选的未完成事件传递到已完成事件
+            goRight() {
+                //复制数组
+                let unfinish = [...this.state.unfinish];
+                let finish = [...this.state.finish];
+                //定义空数组，用来储存已勾选的选项
+                let item = []
+                //遍历数组取出勾选的选项
+                for (let i = 0; i < unfinish.length; i++) {
+                    if (unfinish[i].checked === true) {
+                        item.push(unfinish[i])
+                    }
+                }
+                //将勾选的选项的checked设置了false
+                item = item.map(item => {
+                    return {
+                        id: item.id,
+                        thing: item.thing,
+                        checked: false
+                    }
+                })
+                //将已勾选选项数组合并到已完成数组
+                finish = finish.concat(item);
+                //按照对象里的id进行排序
+                finish.sort(function(a,b){
+                    return a['id'] - b['id']
+                })
+                //取出未完成数组中checked为false的值
+                unfinish = unfinish.filter(item => {
+                    return item.checked != true
+                })
+                //判断未完成事件全选按钮是否勾选
+                if (this.state.unfinishAll) {
+                    //如果已经勾选则取消勾选并更新两个数组
+                    this.setState((state) => {
+                        return {
+                            unfinish: unfinish,
+                            finish: finish,
+                            unfinishAll: !state.unfinishAll
+                        }
+                    })
+                } else {
+                    this.setState((state) => {
+                        return {
+                            unfinish: unfinish,
+                            finish: finish,
+                        }
+                    })
+                }
+
+            }
+            //勾选的已完成事件传递到未完成事件
+            goLeft() {
+                let unfinish = [...this.state.unfinish];
+                let finish = [...this.state.finish];
+                let item = []
+                for (let i = 0; i < finish.length; i++) {
+                    if (finish[i].checked === true) {
+                        item.push(finish[i])
+                    }
+                }
+                item = item.map(item => {
+                    return {
+                        id: item.id,
+                        thing: item.thing,
+                        checked: false
+                    }
+                })
+                unfinish = unfinish.concat(item);
+                unfinish.sort(function(a,b){
+                    return a['id'] - b['id']
+                })
+                finish = finish.filter(item => {
+                    return item.checked != true
+                })
+
+                if (this.state.finishAll) {
+                    this.setState((state) => {
+                        return {
+                            unfinish: unfinish,
+                            finish: finish,
+                            finishAll: !state.finishAll
+                        }
+                    })
+                } else {
+                    this.setState((state) => {
+                        return {
+                            unfinish: unfinish,
+                            finish: finish,
+                        }
+                    })
+                }
+            }
+            //未完成事件单选按钮方法
+            UnfinishChange(index) {
+                let unfinish = [...this.state.unfinish];
+                //将选定的选项的checked取反
+                unfinish[index].checked = !unfinish[index].checked;
+                //判断未完成事件全选按钮是否勾选
+                if (this.state.unfinishAll) {
+                    //已勾选则取消勾选
+                    this.setState((state) => {
+                        return {
+                            unfinish: unfinish,
+                            unfinishAll: false
+                        }
+                    })
+                } else {
+                    this.setState({
+                        unfinish
+                    })
+                }
+
+            }
+            //已完成事件单选按钮方法
+            finishChange(index) {
+                let finish = [...this.state.finish];
+                finish[index].checked = !finish[index].checked;
+                if (this.state.finishAll) {
+                    this.setState((state) => {
+                        return {
+                            finish: finish,
+                            finishAll: false
+                        }
+                    })
+                } else {
+                    this.setState({
+                        finish
+                    })
+                }
+            }
+            //已完成事件全选按钮方法
+            finishAllSelect() {
+                let finish = [...this.state.finish];
+                //如果全选按钮值为true，则将数组中的checked全部设为false
+                if (this.state.finishAll) {
+                    finish = finish.map(item => {
+                        return {
+                            id: item.id,
+                            thing: item.thing,
+                            checked: false
+                        }
+                    })
+                } else {
+                    //如果全选按钮值为false，则将数组中的checked全部设为true
+                    finish = finish.map(item => {
+                        return {
+                            id: item.id,
+                            thing: item.thing,
+                            checked: true
+                        }
+                    })
+                }
+                this.setState((state) => {
+                    return {
+                        finish: finish,
+                        finishAll: !state.finishAll
+                    }
+                })
+            }
+            //未完成事件全选按钮方法
+            unFinishAllSelect() {
+                let unfinish = [...this.state.unfinish];
+                if (this.state.unfinishAll) {
+                    unfinish = unfinish.map(item => {
+                        return {
+                            id: item.id,
+                            thing: item.thing,
+                            checked: false
+                        }
+                    })
+                } else {
+                    unfinish = unfinish.map(item => {
+                        return {
+                            id: item.id,
+                            thing: item.thing,
+                            checked: true
+                        }
+                    })
+                }
+                this.setState((state) => {
+                    return {
+                        unfinish: unfinish,
+                        unfinishAll: !state.unfinishAll
+                    }
+                })
+            }
+            getNum(arr){
+                let num = 0;
+                for(let i = 0; i < arr.length; i++){
+                    if(arr[i].checked == true){
+                        num++;
+                    }
+                }
+                return num
+            }
+            
+            render() {
+                const finishHas = this.getNum(this.state.finish);
+                const finishSum = this.state.finish.length;
+                const unfinishHas = this.getNum(this.state.unfinish);
+                const unfinishSum = this.state.unfinish.length;
+                return (
+                    <div className='main'>
+                        <div className='float'>
+                            <List
+                                list={this.state.unfinish}
+                                title='未完成的事'
+                                change={this.UnfinishChange.bind(this)}
+                                checked={this.state.unfinishAll}
+                                allSelect={this.unFinishAllSelect.bind(this)} 
+                                has={unfinishHas} 
+                                sum={unfinishSum}
+                            />
+                        </div>
+                        <div className='btn float'>
+                            <button onClick={() => this.goRight()}><span className='btn_font'>{">"}</span></button>
+                            <button onClick={() => this.goLeft()}><span className='btn_font'>{"<"}</span></button>
+                        </div>
+                        <div className='float'>
+                            <List
+                                list={this.state.finish}
+                                title='已完成的事'
+                                change={this.finishChange.bind(this)}
+                                checked={this.state.finishAll}
+                                allSelect={this.finishAllSelect.bind(this)} 
+                                has={finishHas} 
+                                sum={finishSum}
+                            />
+                        </div>
+                    </div>
+                )
+            }
+        }
+        ReactDOM.render(
+            <App />,
+            document.getElementById('root')
+        )
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .main {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* .btn_block {
+            float: right;
+        } */
+
+        .btn {
+            width: 40px;
+            height: 20px;
+            border-radius: 15px;
+            font-size: xx-small;
+            outline: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="root"></div>
+    <script src="../assets/js/react.development.js"></script>
+    <script src="../assets/js/react-dom.development.js"></script>
+    <script src="../assets/js/browser.min.js"></script>
+    <script type="text/babel">
+        class ProductCategoryRow extends React.Component {
+            constructor(props) {
+                super(props)
+            }
+            render() {
+                return (
+                    <tr colSpan='2'>
+                        <td style={{ fontSize: '20px' }}>{this.props.category}</td>
+                    </tr>
+                )
+            }
+        }
+        class ProductRow extends React.Component {
+            constructor(props) {
+                super(props)
+            }
+            render() {
+                const product = this.props.product;
+                const name = this.props.product.stocked ? product.name : <span style={{ color: 'red' }}>{product.name}</span>
+                return (
+                    <tr>
+                        <td>{name}</td>
+                        <td>{product.price}</td>
+                    </tr>
+                )
+            }
+        }
+        class ProductTable extends React.Component {
+            constructor(props) {
+                super(props)
+            }
+            render() {
+                let rows = [];
+                let lastCategoryName = null;
+                this.props.products.forEach((product, index) => {
+                    //判断上次对象的category是否与这次相等
+                    if (lastCategoryName != product.category) {
+                        //不相等则加入ProductCategoryRow组件
+                        rows.push(<ProductCategoryRow category={product.category} key={product.category} />)
+                    }
+                    rows.push(<ProductRow product={product} key={index} />)
+                    lastCategoryName = product.category;
+                })
+                return (
+                    <table>
+                        <thead>
+                            <tr>
+                                <td style={{ fontSize: '22px' }}>
+                                    <Sort title='名称' onUpClick={this.props.onUpClick} onDownClick={this.props.onDownClick} onNowClick={this.props.onNowClick} value='name' />
+                                </td>
+                                <td style={{ fontSize: '22px' }}>
+                                    <Sort title='价格' onUpClick={this.props.onUpClick} onDownClick={this.props.onDownClick} value='price' />
+                                </td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {rows}
+                        </tbody>
+                    </table>
+                )
+            }
+        }
+        class Sort extends React.Component {
+            constructor(props) {
+                super(props)
+            }
+            render() {
+                return (
+                    <div>
+                        <div>
+                            <span>{this.props.title}</span>
+                            <span className='btn_block'>
+                                <button className='btn' onClick={() => this.props.onUpClick(this.props.value)}>升序</button>
+                                <button className='btn' onClick={() => this.props.onDownClick(this.props.value)}>降序</button>
+                            </span>
+                        </div>
+                    </div>
+                )
+            }
+        }
+        class SearchBar extends React.Component {
+            constructor(props) {
+                super(props)
+            }
+            render() {
+                return (
+                    <div>
+                        <div>
+                            <input
+                                type="text"
+                                placeholder="请输入要查找的货物名称"
+                                value={this.props.value}
+                                onChange={(e) => { this.props.handleChange(e) }}
+                            />
+                        </div>
+                        <div>
+                            <input
+                                type="checkbox"
+                                checked={this.props.checked}
+                                onChange={() => { this.props.handleSelect() }}
+                            />
+                            <span>是否只显示有存货的商品</span>
+                        </div>
+                    </div>
+                )
+            }
+        }
+        class FilterableProductTable extends React.Component {
+            constructor(props) {
+                super(props);
+                this.state = {
+                    inputText: '',
+                    checked: false,
+                    products: this.props.products
+                }
+            }
+            handleChange(e) {
+                let products = []
+                var patt = new RegExp(e.target.value);
+                if (e.target.value !== '') {
+                    //遍历this.props.products数组用正则判断是否匹配，匹配则加入products
+                    for (let i = 0; i < this.props.products.length; i++) {
+                        if (patt.test(this.props.products[i].name)) {
+                            products.push(this.props.products[i])
+                        }
+                    }
+                } else {
+                    //输入框为空则全部输出
+                    products = this.props.products
+                }
+                //判断checked是否为true
+                if (this.state.checked == true) {
+                    //checked为true的话返回stocked为true的子集
+                    products = products.filter(item => {
+                        return item.stocked == true
+                    })
+                }
+                this.setState({
+                    inputText: e.target.value,
+                    products
+                })
+            }
+            handleSelect() {
+                let products = []
+                var patt = new RegExp(this.state.inputText);
+                if (this.state.inputText !== '') {
+                    for (let i = 0; i < this.props.products.length; i++) {
+                        if (patt.test(this.props.products[i].name)) {
+                            products.push(this.props.products[i])
+                        }
+                    }
+                } else {
+                    products = this.props.products
+                }
+                if (this.state.checked == false) {
+                    products = products.filter(item => {
+                        return item.stocked == true
+                    })
+                }
+                this.setState((state) => {
+                    return {
+                        checked: !state.checked,
+                        products: products
+                    }
+                })
+            }
+            handDownClick(key) {
+                let products = [...this.state.products]
+                if (key == 'name') {
+                    products.sort(byField("name",false))
+                } else if (key == 'price') {
+                    console.log('priceUp');
+                    products.sort(byField("price",false))
+                }
+                this.setState({
+                    products
+                })
+            }
+            handUpClick(key) {
+                let products = [...this.state.products]
+                if (key == 'name') {
+                    products.sort(byField("name",true))
+                } else if (key == 'price') {
+                    products.sort(byField("price",true))
+                }
+                this.setState({
+                    products
+                })
+            }
+            render() {
+                return (
+                    <div>
+                        <SearchBar
+                            checked={this.state.checked}
+                            handleSelect={this.handleSelect.bind(this)}
+                            handleChange={this.handleChange.bind(this)}
+                        />
+                        <ProductTable
+                            products={this.state.products}
+                            onUpClick={this.handUpClick.bind(this)}
+                            onDownClick={this.handDownClick.bind(this)}
+                        />
+                    </div>
+                )
+            }
+        }
+        class App extends React.Component {
+            constructor(props) {
+                super(props);
+                this.state = {
+                    products: [
+                        { category: 'Sporting Goods', price: 49.99, stocked: true, name: 'Football' },
+                        { category: 'Sporting Goods', price: 9.99, stocked: true, name: 'Baseball' },
+                        { category: 'Sporting Goods', price: 29.99, stocked: false, name: 'Basketball' },
+                        { category: 'Electronics', price: 99.99, stocked: true, name: 'iPod Touch' },
+                        { category: 'Electronics', price: 399.99, stocked: false, name: 'iPhone 5' },
+                        { category: 'Electronics', price: 199.99, stocked: true, name: 'Nexus 7' }
+                    ]
+                }
+            }
+            render() {
+                return (
+                    <div className='main'>
+                        <FilterableProductTable products={this.state.products} />
+                    </div>
+
+
+                )
+            }
+
+        }
+        function byField(attr, rev) {
+            if (rev == undefined) {
+                rev = 1;
+            } else {
+                rev = (rev) ? 1 : -1;
+            }
+            return function (a, b) {
+                a = a[attr];
+                b = b[attr];
+                if (a < b) {
+                    return rev * -1;
+                }
+                if (a > b) {
+                    return rev * 1;
+                }
+                return 0;
+            }
+        }
+
+        ReactDOM.render(
+            <App />,
+            document.getElementById('root')
+        )
+    </script>
+</body>
+
+</html>

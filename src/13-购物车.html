@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>购物车</title>
+</head>
+
+<body>
+    <div id="root"></div>
+    <script src="../assets/js/react.development.js"></script>
+    <script src="../assets/js/react-dom.development.js"></script>
+    <script src="../assets/js/browser.min.js"></script>
+    <script type="text/babel">
+        const buyCar = {
+            // backgroundColor: 'rgba(63, 56, 56, 0.788)',
+            margin: '0 auto',
+            width: '1200px'
+        }
+        const buyCarBlock = {
+            // backgroundColor: 'rgba(206, 188, 188, 0.8)',
+            width: '600px',
+            margin: '0 auto'
+        };
+        const Block = {
+            display: 'flex'
+        }
+        const Block_name = {
+            flex: 1,
+            textAlign: 'center',
+            height: '50px',
+            lineHeight: '50px',
+        }
+        const btn = {
+            display: 'inline',
+            flex: 1,
+            height: '25px',
+            width: '35px',
+            borderRadius: '15px',
+            marginTop: '10px',
+            outline: 'none',
+            fontSize: '20px'
+            // backgroundColor: 'rgba(175, 18, 18, 0.596)'
+        }
+        const btn_del = {
+            display: 'inline',
+            flex: 1,
+            height: '25px',
+            width: '60px',
+            borderRadius: '15px',
+            marginTop: '10px',
+            outline: 'none',
+        }
+        const btn_submit = {
+            display: 'inline',
+            flex: 1,
+            height: '25px',
+            width: '60px',
+            borderRadius: '15px',
+            marginTop: '10px',
+            outline: 'none',
+            marginLeft: '20px',
+            background: 'linear-gradient(90deg, #FD9FA0, #FD9FC0)',
+        }
+        const btn_add = {
+            height: '25px',
+            width: '100px',
+            borderRadius: '15px',
+            marginTop: '10px',
+            outline: 'none',
+        }
+        const title = {
+            textAlign: 'center',
+            fontSize: '30px'
+            // color: '#ffffff'
+        }
+        const footer = {
+            width: '600px',
+            margin: '0 auto',
+            marginTop: '30px',
+            lineHeight: '50px',
+            height: '50px',
+            textAlign: 'right'
+        }
+        const goods = {
+            
+        }
+        const goods_block = {
+            float: 'left',
+            marginTop: '20px'
+        }
+        const goods_img = {
+            width: '300px'
+        }
+        const goods_name = {
+            textAlign : 'center',
+            fontSize: '20px',
+            height: '30px',
+            lineHeight: '30px'
+
+        }
+        const goods_price = {
+            textAlign : 'center',
+            fontSize: '26px',
+            color: '#FE6A00',
+            height: '40px',
+            lineHeight: '40px'
+        }
+        const goods_btn = {
+            textAlign : 'center',
+            height: '30px',
+            lineHeight: '30px'
+        }
+        const clear = {
+            clear: 'both'
+        }
+        const img = {
+            width: '300px',
+            height: '295px'
+        }
+
+
+        class BuyCar extends React.Component {
+            constructor(props) {
+                super(props);
+                this.state = {
+                    buyCar: [
+                        {
+                            imgSrc: '',
+                            name: 'phone1',
+                            num: 1,
+                            price: 1999
+                        },
+                        {
+                            imgSrc: '',
+                            name: 'phone2',
+                            num: 1,
+                            price: 2000
+                        },
+                        {
+                            imgSrc: '',
+                            name: 'phone3',
+                            num: 5,
+                            price: 2999
+                        },
+                        {
+                            imgSrc: '',
+                            name: 'phone4',
+                            num: 3,
+                            price: 3999
+                        },
+                    ],
+                    goods:[
+                        {
+                            imgSrc:'../assets/img/phone.jpg',
+                            name: 'phone1',
+                            price: 1999
+                        },
+                        {
+                            imgSrc:'../assets/img/phone2.jpg',
+                            name: 'phone2',
+                            price: 2000
+                        },
+                        {
+                            imgSrc:'../assets/img/phone3.jpg',
+                            name: 'phone3',
+                            price: 2999
+                        },
+                        {
+                            imgSrc:'../assets/img/phone4.jpg',
+                            name: 'phone4',
+                            price: 3999
+                        },
+                        {
+                            imgSrc:'../assets/img/phone5.jpg',
+                            name: 'phone5',
+                            price: 4999
+                        },
+                        {
+                            imgSrc:'../assets/img/phone6.jpg',
+                            name: 'phone6',
+                            price: 5999
+                        },
+                        {
+                            imgSrc:'../assets/img/phone7.jpg',
+                            name: 'phone7',
+                            price: 6999
+                        },
+                        {
+                            imgSrc:'../assets/img/phone8.jpg',
+                            name: 'phone8',
+                            price: 7999
+                        }
+                        
+                    ]
+                }
+            }
+            add(index) {
+                let arr = this.state.buyCar;
+                arr[index].num += 1;
+                this.setState({
+                    buyCar: arr
+                })
+            }
+            sub(index) {
+                let arr = this.state.buyCar;
+                if (arr[index].num === 1) {
+                    this.del(index);
+                } else {
+                    arr[index].num -= 1;
+                    this.setState({
+                        buyCar: arr
+                    })
+                }
+            }
+            del(index) {
+                let arr = this.state.buyCar;
+                arr.splice(index, 1);
+                this.setState({
+                    buyCar: arr
+                })
+            }
+            submit(num) {
+                alert('请支付' + num)
+            }
+            addGoods(index){
+                let arr = this.state.buyCar;
+                console.log(this.state.buyCar);
+                let goods = this.state.goods[index];
+                //设置添加数量为1
+                goods.num = 1;
+                //如果存在则返回对应下标，否则返回-1s
+                if(this.isHas(arr,goods.name) != -1){
+                    console.log('add');
+                    // console.log(arr);
+                    // console.log(arr[this.isHas(arr,goods.name)].num);
+                    // console.log(this.state.buyCar);
+                    arr[this.isHas(arr,goods.name)].num += 1
+                }else{
+                    console.log('push');
+                    arr.push(goods);
+                }
+                this.setState({
+                    buyCar: arr
+                });
+                window.scrollTo(0, document.documentElement.scrollHeight-document.documentElement.clientHeight);
+            }
+            isHas(arr,name){
+                for(let i = 0; i < arr.length; i++){
+                    if(arr[i].name == name){
+                        return (i);
+                    }else{
+                        continue;
+                    }
+                }
+                return (-1);
+            }
+            render() {
+                let priceSum = 0;
+                for (let i = 0; i < this.state.buyCar.length; i++) {
+                    priceSum += this.state.buyCar[i].num * this.state.buyCar[i].price
+                }
+                return (
+                    <div style={buyCar}>
+                        <div style={title}>
+                            <h3>推荐商品</h3>
+                        </div>
+                        <div style={goods}>
+                            {this.state.goods.map((item, index) => {
+                                return (
+                                    <div key={index} style={goods_block}>
+                                        <div style={goods_img}>
+                                            <img src={item.imgSrc} alt="图片暂时无法显示" style={img} />
+                                        </div>
+                                        <div style={goods_name}>{item.name}</div>
+                                        <div style={goods_price}>¥{item.price}</div>
+                                        <div style={goods_btn}>
+                                            <button style={btn_add} onClick={() => this.addGoods(index)}>加入购物车</button>
+                                        </div>
+                                    </div>
+                                )
+                            })}
+                        </div>
+                        <div style={clear}></div>
+                        <div style={title}>
+                            <h3>购物车</h3>
+                        </div>
+                        <div style={buyCarBlock}>
+                            <div style={Block}>
+                                <div style={Block_name}>商品名称</div>
+                                <div style={Block_name}>数量</div>
+                                <div style={Block_name}>价格</div>
+                                <div style={Block_name}></div>
+                                <div style={Block_name}></div>
+                            </div>
+                            {this.state.buyCar.map((item, index) => {
+                                return (
+                                    <div key={index} style={Block}>
+                                        <div style={Block_name}>{item.name}</div>
+                                        <div style={Block_name}>{item.num}</div>
+                                        <div style={Block_name}>{item.price * item.num}</div>
+                                        <div style={Block_name}>
+                                            <button style={btn} onClick={this.sub.bind(this, index)}>-</button>
+                                            <button style={btn} onClick={this.add.bind(this, index)}>+</button>
+                                        </div>
+                                        <div style={Block_name}>
+                                            <button style={btn_del} onClick={this.del.bind(this, index)}>删除</button>
+                                        </div>
+                                    </div>
+                                )
+                            })}
+                        </div>
+                        <div style={footer}>
+                            <span>合计：{priceSum}</span>
+                            <button style={btn_submit} onClick={() => this.submit(priceSum)}>结算</button>
+                        </div>
+                    </div>
+                )
+            }
+        }
+        ReactDOM.render(
+            <BuyCar />,
+            document.getElementById('root')
+        )
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="root"></div>
+    <script src="../assets/js/react.development.js"></script>
+    <script src="../assets/js/react-dom.development.js"></script>
+    <script src="../assets/js/browser.min.js"></script>
+    <script type="text/babel">
+        class App extends React.Component{
+            constructor(props){
+                super(props);
+                this.state = {
+                    value:'sleep'
+                }
+            }
+            onSubmit(e){
+                alert('你喜欢做的事是: ' + this.state.value)
+                e.preventDefault();
+            }
+            onChange(e){
+                this.setState({value: e.target.value});
+            }
+            render(){
+                return (
+                    <div>
+                        <form onSubmit={(e) => this.onSubmit(e)}>
+                            <label>
+                                选择你喜欢做的事：
+                                <select name="" id="" value={this.state.value} onChange={(e) => this.onChange(e)}>
+                                    <option value="study">学习</option>
+                                    <option value="sleep">睡觉</option>
+                                    <option value="play">玩游戏</option>
+                                </select>
+                            </label>
+                            <input type="submit" value='提交' />
+                        </form>
+                    </div>
+                )
+            }
+            
+        }
+        ReactDOM.render(
+            <App />,
+            document.getElementById('root')
+        )
+    </script>
+</body>
+</html>

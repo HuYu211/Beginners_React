@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>State的更新会被合并</title>
+</head>
+
+<body>
+    <div id="root"></div>
+    <script src="../assets/js/react.development.js"></script>
+    <script src="../assets/js/react-dom.development.js"></script>
+    <script src="../assets/js/browser.min.js"></script>
+    <script src="../assets/js/request/request.js"></script>
+    <script type="text/babel">
+        class Test extends React.Component {
+            constructor(props) {
+                super(props);
+                this.state = {
+                    data1: [],
+                    data2: []
+                }
+            }
+            componentDidMount() {
+                jsonp('http://192.168.3.31:5000/api/goods/news', {}, 'successCallback').then(res => {
+                    console.log(res);
+                    this.setState({
+                        data1: res.TestData,
+                    });
+                })
+                jsonp('http://192.168.3.31:5000/api/goods/hots', {}, 'successCallback').then(res => {
+                    console.log(res);
+                    this.setState({
+                        data2: res.TestData
+                    });
+                })
+            }
+            render() {
+                return (
+                    <div>
+                        <div>{this.state.data1}</div>
+                        <div>{this.state.data2}</div>
+                    </div>
+                )
+            }
+
+        }
+        ReactDOM.render(
+            <Test />,
+            document.getElementById('root')
+        )
+
+    </script>
+</body>
+
+</html>

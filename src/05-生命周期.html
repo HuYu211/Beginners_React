@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="root"></div>
+    <script src="../assets/js/react.development.js"></script>
+    <script src="../assets/js/react-dom.development.js"></script>
+    <script src="../assets/js/browser.min.js"></script>
+    <script type="text/babel">
+        class Clock extends React.Component {
+            constructor(props) {
+                super(props);
+                this.state = { 
+                    date: new Date() 
+                };
+            }
+
+            componentDidMount() {
+                this.Timer = setInterval( () => {
+                    this.tick();
+                },1000);
+            }
+
+            componentWillUnmount() {
+                clearInterval(this.Timer);
+            }
+
+            tick() {
+                this.setState({
+                    date: new Date()
+                });
+            }
+
+            render() {
+                return (
+                    <div>
+                        时间：{this.state.date.toLocaleTimeString()}.
+                    </div>
+                );
+            }
+        }
+
+        ReactDOM.render(
+            <Clock />,
+            document.getElementById('root')
+        );
+    </script>
+</body>
+
+</html>

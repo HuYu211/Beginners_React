@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>setState合并</title>
+</head>
+
+<body>
+    <div id="root"></div>
+    <script src="../assets/js/react.development.js"></script>
+    <script src="../assets/js/react-dom.development.js"></script>
+    <script src="../assets/js/browser.min.js"></script>
+    <script type="text/babel">
+        class App extends React.Component {
+            constructor(props) {
+                super(props);
+                this.state = {
+                    count1: 0,
+                    count2: 0
+                }
+            }
+            componentDidMount() {
+                this.setState({
+                    count1: this.state.count1 + 1
+                })
+                this.setState({
+                    count1: this.state.count1 + 2
+                })
+                this.setState({
+                    count1: this.state.count1 + 3
+                })
+                this.setState((state) => {
+                    return {
+                        count2: state.count2 + 1
+                    }
+                })
+                this.setState((state) => {
+                    return {
+                        count2: state.count2 + 2
+                    }
+                })
+                this.setState((state) => {
+                    return {
+                        count2: state.count2 + 3
+                    }
+                })
+                console.log('count1:'+this.state.count1);
+                console.log('count2:'+this.state.count2);
+            }
+
+            render() {
+                return (
+                    <div>
+                        count1:<div>{this.state.count1}</div>
+                        count2:<div>{this.state.count2}</div>
+                    </div>
+
+                )
+            }
+        }
+        ReactDOM.render(
+            <App />,
+            document.getElementById('root')
+        )
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="root"></div>
+    <script src="../assets/js/react.development.js"></script>
+    <script src="../assets/js/react-dom.development.js"></script>
+    <script src="../assets/js/browser.min.js"></script>
+    <script type="text/babel">
+        class WarningBanner extends React.Component {
+            constructor(props) {
+                super(props)
+            }
+            render() {
+                if (!this.props.warn) {
+                    return null;
+                } else {
+                    return (
+                        <div className="warning">
+                            Warning!
+                        </div>
+                    );
+                }
+            }
+
+        }
+        class App extends React.Component {
+            constructor(props) {
+                super(props);
+                this.state = { showWarning: true };
+            }
+     
+            handleToggleClick() {
+                this.setState(state => ({
+                    showWarning: !state.showWarning
+                }));
+            }
+
+            render() {
+                return (
+                    <div>
+                        <WarningBanner warn={this.state.showWarning} />
+                        <button onClick={() => this.handleToggleClick()}>
+                            {this.state.showWarning ? 'Hide' : 'Show'}
+                        </button>
+                    </div>
+                );
+            }
+        }
+        ReactDOM.render(
+            <App />,
+            document.getElementById('root')
+        )
+    </script>
+</body>
+
+</html>

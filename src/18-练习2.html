@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="root"></div>
+    <script src="../assets/js/react.development.js"></script>
+    <script src="../assets/js/react-dom.development.js"></script>
+    <script src="../assets/js/browser.min.js"></script>
+    <script type="text/babel">
+        const btn = {
+            marginLeft: '20px',
+            width: '70px',
+            borderRadius: '15px',
+            outline: 'none',
+        }
+        class App extends React.Component {
+            constructor(props) {
+                super(props);
+                this.state = {
+                    unfinish: [
+                        {
+                            id: 0,
+                            thing: '刷牙'
+                        },
+                        {
+                            id: 1,
+                            thing: '洗脸'
+                        },
+                        {
+                            id: 2,
+                            thing: '吃饭'
+                        },
+
+                    ],
+                    finish: [
+                        
+                    ]
+                }
+            }
+            finish(index) {
+                let arr1 = this.state.unfinish;
+                let arr2 = this.state.finish;
+                let item = arr1.splice(index, 1);
+                arr2.push(item[0]);
+                this.setState({
+                    unfinish: arr1,
+                    finish: arr2
+                })
+            }
+            render() {
+                const listItems1 = this.state.unfinish.map((item, index) =>
+                    <li key={item.id}>
+                        <span >{item.thing}</span>
+                        <button onClick={(index) => this.finish(index)} style={btn}>完成</button>
+                    </li>
+                );
+                const listItems2 = this.state.finish.map((item) =>
+                    <li key={item.id}>{item.thing}</li>
+                );
+
+
+                return (
+                    <div>
+
+                        <div>
+                        <div>
+                            <h2>未完成的事</h2>
+                            <ul>{listItems1}</ul>
+                        </div>
+                        <div>
+                            <h2>已完成的事</h2>
+                            <ul>{listItems2}</ul>
+                        </div>
+
+                    </div>
+                    </div>
+                    
+                )
+            }
+
+
+        }
+        ReactDOM.render(
+            <App />,
+            document.getElementById('root')
+        )
+    </script>
+</body>
+
+</html>

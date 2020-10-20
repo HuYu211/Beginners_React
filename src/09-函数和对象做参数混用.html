@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>函数和对象做参数混用</title>
+		
+	</head>
+	<body>
+		<div id="root"></div>
+		<script src="../assets/js/react.development.js"></script>
+		<script src="../assets/js/react-dom.development.js"></script>
+		<script src="../assets/js/browser.min.js"></script>
+		<script type="text/babel">
+		
+			class App extends React.Component{
+				constructor() {
+					super();
+					this.state = {
+						count:0
+					}
+				}
+				componentDidMount(){
+					this.setState(state=>{
+						return {count:state.count+1}
+					})
+					this.setState(state=>{
+						return {count:state.count+2}
+					})
+					this.setState({
+						count:this.state.count+16
+					})
+					this.setState(state=>{
+						return {count:state.count+3}
+					})
+					
+					this.setState(state=>{
+						return {count:state.count+4}
+					})
+					this.setState({
+						count:this.state.count+16
+					})
+					this.setState(state=>{
+						return {count:state.count+5}
+					})
+					console.log(this.state.count);
+				}
+				
+				render(){
+					console.log('render:');
+					return(
+						<h1>{this.state.count}</h1>
+					)
+				}
+			}
+			ReactDOM.render(
+				<App />,
+				document.getElementById("root")
+			);
+		</script>
+	</body>
+
+</html>

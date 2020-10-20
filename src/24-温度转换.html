@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="root"></div>
+    <script src="../assets/js/react.development.js"></script>
+    <script src="../assets/js/react-dom.development.js"></script>
+    <script src="../assets/js/browser.min.js"></script>
+    <script type="text/babel">
+        //展示信息组件
+        class BoilingVerdict extends React.Component {
+            constructor(props) {
+                super(props)
+            }
+            render() {
+                let show = <div></div>;
+                if (this.props.celsius >= 100) {
+                    show = <div>水开了.</div>
+                } else {
+                    show = <div>水还没开.</div>
+                }
+                return (
+                    <div>{show}</div>
+                )
+            }
+        }
+        const scaleNames = {
+            c: '摄氏温度',
+            f: '华氏温度'
+        };
+        //输入框组件
+        class TemperatureInput extends React.Component {
+            constructor(props) {
+                super(props);
+                this.handleChange = this.handleChange.bind(this);
+            }
+
+            handleChange(e) {
+                this.props.onTemperatureChange(e.target.value);
+            }
+
+
+            render() {
+                const temperature = this.props.temperature;
+                const scale = this.props.scale;
+                return (
+                    <fieldset>
+                        <legend>请输入{scaleNames[scale]}:</legend>
+                        <input value={temperature}
+                            onChange={this.handleChange} />
+                    </fieldset>
+                );
+            }
+        }
+        class App extends React.Component {
+            constructor(props) {
+                super(props);
+                this.handleCelsiusChange = this.handleCelsiusChange.bind(this);
+                this.handleFahrenheitChange = this.handleFahrenheitChange.bind(this);
+                this.state = { temperature: '', scale: 'c' };
+            }
+            //华氏温度转摄氏温度
+            toCelsius(fahrenheit) {
+                return (fahrenheit - 32) * 5 / 9;
+            }
+            //摄氏温度转华氏温度
+            toFahrenheit(celsius) {
+                return (celsius * 9 / 5) + 32;
+            }
+            //判断温度类型并根据传入函数转换
+            tryConvert(temperature, convert) {
+                const input = parseFloat(temperature);
+                if (Number.isNaN(input)) {
+                    return '';
+                }
+                const output = convert(input);
+                const rounded = Math.round(output * 1000) / 1000;
+                return rounded.toString();
+            }
+            //设置摄氏温度
+            handleCelsiusChange(temperature) {
+                this.setState({ scale: 'c', temperature });
+            }
+            //设置华氏温度
+            handleFahrenheitChange(temperature) {
+                this.setState({ scale: 'f', temperature });
+            }
+
+            render() {
+                const celsius = this.state.scale === 'f' ? this.tryConvert(this.state.temperature, this.toCelsius) : this.state.temperature;
+                const fahrenheit = this.state.scale === 'c' ? this.tryConvert(this.state.temperature, this.toFahrenheit) : this.state.temperature;
+
+                return (
+                    <div>
+                        <TemperatureInput
+                            scale="c"
+                            temperature={celsius}
+                            onTemperatureChange={this.handleCelsiusChange} />
+                        <TemperatureInput
+                            scale="f"
+                            temperature={fahrenheit}
+                            onTemperatureChange={this.handleFahrenheitChange} />
+                        <BoilingVerdict
+                            celsius={parseFloat(celsius)} />
+                    </div>
+                );
+            }
+
+        }
+
+        ReactDOM.render(
+            <App />,
+            document.getElementById('root')
+        )
+    </script>
+</body>
+
+</html>
