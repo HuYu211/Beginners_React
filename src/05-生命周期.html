@@ -20,7 +20,10 @@
                     date: new Date() 
                 };
             }
-
+            // shouldComponentUpdate(nextProps, nextState){
+            //     console.log(this.state.date.toLocaleTimeString());
+            //     return false;
+            // }
             componentDidMount() {
                 this.Timer = setInterval( () => {
                     this.tick();
@@ -30,7 +33,9 @@
             componentWillUnmount() {
                 clearInterval(this.Timer);
             }
-
+            componentDidUpdate(){
+                console.log(this.state.date.toLocaleTimeString());
+            }
             tick() {
                 this.setState({
                     date: new Date()
